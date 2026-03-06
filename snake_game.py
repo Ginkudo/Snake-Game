@@ -18,6 +18,14 @@ class Snake:
         self.head = pygame.Rect(self.x, self.y, BLOCK_SIZE, BLOCK_SIZE) 
         self.body = [pygame.Rect(self.x-BLOCK_SIZE, self.y, BLOCK_SIZE, BLOCK_SIZE)] # Initial snake body
         self.dead = False
+    def update(self):
+        self.body.append(self.head.copy()) # Move body segments
+        for i in range(len(self.body)-1, 0, -1):
+            self.body[i].x = self.body[i-1].x
+            self.body[i].y = self.body[i-1].y
+        self.head.x += self.xdir * BLOCK_SIZE
+        self.head.y += self.ydir * BLOCK_SIZE
+        self.body.remove(self.head) # Remove head from body list to avoid self-collision
 
 def draw_grid():
     for x in range(0, WIDTH, BLOCK_SIZE):
@@ -33,6 +41,21 @@ while True: # Handle events
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP and snake.ydir != 1:
+                snake.xdir = 0
+                snake.ydir = -1
+            elif event.key == pygame.K_DOWN and snake.ydir != -1:
+                snake.xdir = 0
+                snake.ydir = 1
+            elif event.key == pygame.K_LEFT and snake.xdir != 1:
+                snake.xdir = -1
+                snake.ydir = 0
+            elif event.key == pygame.K_RIGHT and snake.xdir != -1:
+                snake.xdir = 1
+                snake.ydir = 0
+    snake.update() # Draw everything
+    screen.fill('#000000')
     pygame.draw.rect(screen, '#00ff00', snake.head) # Draw snake head        
     for square in snake.body:
         pygame.draw.rect(screen, '#00ff00', square) # Draw snake
