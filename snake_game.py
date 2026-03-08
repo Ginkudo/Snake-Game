@@ -27,6 +27,13 @@ class Snake:
         self.head.y += self.ydir * BLOCK_SIZE
         self.body.remove(self.head) # Remove head from body list to avoid self-collision
 
+class Apple:
+    def __init__(self):
+        self.x = random.randint(0, (WIDTH-BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
+        self.y = random.randint(0, (HEIGHT-BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
+        self.rect = pygame.Rect(self.x, self.y, BLOCK_SIZE, BLOCK_SIZE)
+    def update(self):
+        pygame.draw.rect(screen, '#ff0000', self.rect) # Draw apple    
 def draw_grid():
     for x in range(0, WIDTH, BLOCK_SIZE):
         for y in range(0, HEIGHT, BLOCK_SIZE):
@@ -35,6 +42,7 @@ def draw_grid():
 draw_grid() # execute game loop
 
 snake = Snake()
+apple = Apple()
 
 while True: # Handle events
     for event in pygame.event.get():
@@ -56,11 +64,13 @@ while True: # Handle events
                 snake.ydir = 0
     snake.update() # Draw everything
     screen.fill('#000000')
+    apple.update() # Draw apple
     pygame.draw.rect(screen, '#00ff00', snake.head) # Draw snake head        
     for square in snake.body:
         pygame.draw.rect(screen, '#00ff00', square) # Draw snake
-
-    screen.fill((0, 0, 0))
+    if snake.head.x == apple.x and snake.head.y == apple.y: # Check for collision with apple
+        snake.body.append(pygame.Rect(snake.head.x, snake.head.y, BLOCK_SIZE, BLOCK_SIZE)) # Grow snake
+        apple = Apple() # Spawn new apple
     draw_grid()
     pygame.display.update()
     clock.tick(10)
