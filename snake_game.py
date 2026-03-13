@@ -5,7 +5,7 @@ pygame.init() # Set up display
 WIDTH, HEIGHT = 800, 800 # Colors
 
 BLOCK_SIZE = 50
-FONT = pygame.font.Font('font.ttf', BLOCK_SIZE*2)
+FONT = pygame.font.SysFont('Arial', 30)
 screen = pygame.display.set_mode((800, 800)) # Set up game variables
 pygame.display.set_caption('Snake')
 clock = pygame.time.Clock()
