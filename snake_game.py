@@ -19,6 +19,22 @@ class Snake:
         self.body = [pygame.Rect(self.x-BLOCK_SIZE, self.y, BLOCK_SIZE, BLOCK_SIZE)] # Initial snake body
         self.dead = False
     def update(self):
+        global apple
+        for square in self.body:
+            if self.head.colliderect(square): # Check for self-collision
+                self.dead = True
+                return
+            if self.head.x not in range(0, WIDTH) or self.head.y not in range(0, HEIGHT): # Check for wall collision
+                self.dead = True
+                return
+        if self.dead:
+            self.x, self.y = BLOCK_SIZE, BLOCK_SIZE
+            self.head = pygame.Rect(self.x, self.y, BLOCK_SIZE, BLOCK_SIZE)
+            self.body = [pygame.Rect(self.x-BLOCK_SIZE, self.y, BLOCK_SIZE, BLOCK_SIZE)]
+            self.xdir = 1
+            self.ydir = 0
+            self.dead = False
+            apple = Apple() # Reset apple position
         self.body.append(self.head.copy()) # Move body segments
         for i in range(len(self.body)-1, 0, -1):
             self.body[i].x = self.body[i-1].x
@@ -40,6 +56,9 @@ def draw_grid():
             rect = pygame.Rect(x, y, BLOCK_SIZE, BLOCK_SIZE)
             pygame.draw.rect(screen, '#3c3c3c', rect, 1)
 draw_grid() # execute game loop
+
+score = FONT.render('Score: 0', True, '#ffffff')
+score_rect = score.get_rect(center=(WIDTH//2, BLOCK_SIZE//20))
 
 snake = Snake()
 apple = Apple()
@@ -65,11 +84,13 @@ while True: # Handle events
     snake.update() # Draw everything
     screen.fill('#000000')
     apple.update() # Draw apple
+    score = FONT.render(f'Score: {len(snake.body)+1}', True, '#ffffff') # Update score
     pygame.draw.rect(screen, '#00ff00', snake.head) # Draw snake head        
     for square in snake.body:
         pygame.draw.rect(screen, '#00ff00', square) # Draw snake
+    screen.blit(score, score_rect) # Draw score
     if snake.head.x == apple.x and snake.head.y == apple.y: # Check for collision with apple
-        snake.body.append(pygame.Rect(snake.head.x, snake.head.y, BLOCK_SIZE, BLOCK_SIZE)) # Grow snake
+        snake.body.append(pygame.Rect(square.x, square.y, BLOCK_SIZE, BLOCK_SIZE)) # Grow snake
         apple = Apple() # Spawn new apple
     draw_grid()
     pygame.display.update()
